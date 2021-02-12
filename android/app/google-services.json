@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "373381415585",
+    "project_id": "ahadu-uber-clone",
+    "storage_bucket": "ahadu-uber-clone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373381415585:android:988c16d19751a9b22966e0",
+        "android_client_info": {
+          "package_name": "com.ahadu.uber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373381415585-egod0vq89ojmi6m1kpsg1bphav4o3at8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8X0SdQGtPkAsJHnG7iFG3OnKzNmBiy4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373381415585-egod0vq89ojmi6m1kpsg1bphav4o3at8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
