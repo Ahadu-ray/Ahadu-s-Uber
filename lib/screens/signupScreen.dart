@@ -138,10 +138,10 @@ class SignupScreen extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            UserToRegister _user = UserToRegister(
+                            UserToSignup _user = UserToSignup(
                               name: nameController.text.trim(),
                               email: emailController.text.trim(),
-                              phone: phoneController.text.trim(),
+                              phoneNumber: phoneController.text.trim(),
                               password: passwordController.text.trim(),
                             );
                             UserService _userService = UserService();

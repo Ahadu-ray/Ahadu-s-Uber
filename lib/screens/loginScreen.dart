@@ -1,8 +1,14 @@
+import 'package:ahadu_uber/models/usermodel.dart';
 import 'package:ahadu_uber/screens/signupScreen.dart';
+import 'package:ahadu_uber/services/data/userService.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String idScreen = "login";
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +46,7 @@ class LoginScreen extends StatelessWidget {
                       height: 10,
                     ),
                     TextField(
+                      controller: emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: "Email",
@@ -59,6 +66,7 @@ class LoginScreen extends StatelessWidget {
                       height: 10,
                     ),
                     TextField(
+                      controller: passwordController,
                       keyboardType: TextInputType.emailAddress,
                       obscureText: true,
                       decoration: InputDecoration(
@@ -97,7 +105,12 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: new BorderRadius.circular(24.0),
                       ),
                       onPressed: () {
-                        print("Logged In");
+                        UserToLogin _user = UserToLogin(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
+                        UserService _userService = UserService();
+                        _userService.login(_user, context);
                       },
                     )
                   ],

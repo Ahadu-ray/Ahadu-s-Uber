@@ -10,8 +10,10 @@ import '../../main.dart';
 class UserService {
   DatabaseReference userRef =
       FirebaseDatabase.instance.reference().child("users");
-  void signup(UserToRegister user, BuildContext context) async {
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  void signup(UserToSignup user, BuildContext context) async {
     var toast = Toast();
     final User firebaseUser = (await _firebaseAuth
             .createUserWithEmailAndPassword(
@@ -21,7 +23,7 @@ class UserService {
             .catchError(
               (errMsg) => {
                 toast.errorNotification(
-                  errMsg.toString(),
+                  errMsg.message,
                   context,
                 ),
               },
@@ -34,7 +36,7 @@ class UserService {
       //   "email": emailController.text.trim(),
       //   "phone": phoneController.text.trim(),
       // };
-      userRef.child(firebaseUser.uid).set(user);
+      //userRef.child(firebaseUser.uid).set(user);
       Navigator.pushNamedAndRemoveUntil(
         context,
         MainScreen.idScreen,
@@ -46,6 +48,50 @@ class UserService {
         "Something went wrong. Signup not successful",
         context,
       );
+    }
+  }
+
+  void login(UserToLogin user, BuildContext context) async {
+    var toast = Toast();
+    final User firebaseUser = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+              email: user.email,
+              password: user.password,
+            )
+            .catchError(
+              (errMsg) => {
+                toast.errorNotification(
+                  errMsg.message,
+                  context,
+                ),
+              },
+            ))
+        .user;
+
+    if (firebaseUser != null) {
+      // Map userDataMap = {
+      //   "name": nameController.text.trim(),
+      //   "email": emailController.text.trim(),
+      //   "phone": phoneController.text.trim(),
+      // };
+      print(firebaseUser);
+      userRef
+          .child(firebaseUser.uid)
+          .once()
+          .then((value) => (DataSnapshot snap) {
+                if (snap.value != null) {
+                  print(snap);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, MainScreen.idScreen, (route) => false);
+                  toast.successNotification("Logged In Successfully", context);
+                } else {
+                  _firebaseAuth.signOut();
+                  toast.errorNotification(
+                      "User Doesn't exist. Try Again", context);
+                }
+              });
+    } else {
+      toast.errorNotification("Error Occured Try Again", context);
     }
   }
 }

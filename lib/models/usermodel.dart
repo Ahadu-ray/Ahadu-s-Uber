@@ -1,13 +1,23 @@
-class UserToRegister {
-  String email = "";
-  String name = "";
-  String phone = "";
-  String password = "";
+class UserToSignup {
+  String email;
+  String name;
+  String phoneNumber;
+  String password;
 
-  UserToRegister({
+  UserToSignup({
     this.email,
     this.name,
-    this.phone,
+    this.phoneNumber,
+    this.password,
+  });
+}
+
+class UserToLogin {
+  String email;
+  String password;
+
+  UserToLogin({
+    this.email,
     this.password,
   });
 }
