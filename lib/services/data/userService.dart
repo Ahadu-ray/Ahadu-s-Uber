@@ -1,97 +1,67 @@
 import 'package:ahadu_uber/Screens/mainscreen.dart';
 import 'package:ahadu_uber/models/usermodel.dart';
 import 'package:ahadu_uber/services/notification/toast.dart';
+import 'package:ahadu_uber/widgets/progressDialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
-
 class UserService {
   DatabaseReference userRef =
       FirebaseDatabase.instance.reference().child("users");
-
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  Toast toast = Toast();
 
   void signup(UserToSignup user, BuildContext context) async {
-    var toast = Toast();
-    final User firebaseUser = (await _firebaseAuth
-            .createUserWithEmailAndPassword(
-              email: user.email,
-              password: user.password,
-            )
-            .catchError(
-              (errMsg) => {
-                toast.errorNotification(
-                  errMsg.message,
-                  context,
-                ),
-              },
-            ))
-        .user;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialog(
+            message: "Signing Up",
+          );
+        });
 
-    if (firebaseUser != null) {
-      // Map userDataMap = {
-      //   "name": nameController.text.trim(),
-      //   "email": emailController.text.trim(),
-      //   "phone": phoneController.text.trim(),
-      // };
-      //userRef.child(firebaseUser.uid).set(user);
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+      toast.successNotification("Signup Successful", context);
       Navigator.pushNamedAndRemoveUntil(
-        context,
-        MainScreen.idScreen,
-        (route) => false,
-      );
-      toast.successNotification("Successful", context);
-    } else {
-      toast.errorNotification(
-        "Something went wrong. Signup not successful",
-        context,
-      );
+          context, MainScreen.idScreen, (route) => false);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      toast.errorNotification(e.code, context);
+    } catch (e) {
+      Navigator.pop(context);
+      toast.errorNotification(e, context);
     }
   }
 
   void login(UserToLogin user, BuildContext context) async {
-    var toast = Toast();
-    final User firebaseUser = (await _firebaseAuth
-            .signInWithEmailAndPassword(
-              email: user.email,
-              password: user.password,
-            )
-            .catchError(
-              (errMsg) => {
-                toast.errorNotification(
-                  errMsg.message,
-                  context,
-                ),
-              },
-            ))
-        .user;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialog(
+            message: "Loging In",
+          );
+        });
 
-    if (firebaseUser != null) {
-      // Map userDataMap = {
-      //   "name": nameController.text.trim(),
-      //   "email": emailController.text.trim(),
-      //   "phone": phoneController.text.trim(),
-      // };
-      print(firebaseUser);
-      userRef
-          .child(firebaseUser.uid)
-          .once()
-          .then((value) => (DataSnapshot snap) {
-                if (snap.value != null) {
-                  print(snap);
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, MainScreen.idScreen, (route) => false);
-                  toast.successNotification("Logged In Successfully", context);
-                } else {
-                  _firebaseAuth.signOut();
-                  toast.errorNotification(
-                      "User Doesn't exist. Try Again", context);
-                }
-              });
-    } else {
-      toast.errorNotification("Error Occured Try Again", context);
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+      toast.successNotification("Login Succeful", context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, MainScreen.idScreen, (route) => false);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      toast.errorNotification(e.code, context);
+    } catch (e) {
+      Navigator.pop(context);
+      toast.errorNotification(e, context);
     }
   }
 }

@@ -14,17 +14,22 @@ class Validator {
   ]);
 
   //validate email is filled and format
-  final emailValidator = MultiValidator([
-    RequiredValidator(errorText: 'Email is required'),
-    EmailValidator(errorText: 'Not a correct Email format')
-  ]);
+  final emailValidator = MultiValidator(
+    [
+      RequiredValidator(errorText: 'Email is required'),
+      EmailValidator(errorText: 'Not a correct Email format')
+    ],
+  );
 
   //validate phone format and is filled
   //accepted phone formats +2519000000, 0900000000, '-,. and space' are acceptable in between 3 digits
-  final phoneValidator = MultiValidator([
-    RequiredValidator(errorText: 'Phone Number is required'),
-    PatternValidator(
+  final phoneValidator = MultiValidator(
+    [
+      RequiredValidator(errorText: 'Phone Number is required'),
+      PatternValidator(
         r'(^(\+251|0)\-?\s?(\9)(\d{8}|(\d{2}[\s.-]?\d{3}[\s.-]?\d{3}))$)',
-        errorText: 'Phone Number must have at least one special character')
-  ]);
+        errorText: 'Phone Number must have at least one special character',
+      )
+    ],
+  );
 }
