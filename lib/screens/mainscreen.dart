@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ahadu_uber/services/data/method.dart';
 import 'package:ahadu_uber/widgets/divider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,6 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String place = "Main Screen";
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController newGoogleMapController;
 
@@ -32,6 +34,11 @@ class _MainScreenState extends State<MainScreen> {
         CameraPosition(target: latLngPosition, zoom: 14);
     newGoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    var address = await searchCoordinate(position);
+    setState(() {
+      this.place = address.displayName;
+    });
   }
 
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -44,7 +51,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
-          title: Text("MainScreen"),
+          title: Text(place),
         ),
         drawer: Container(
           color: Colors.white,
@@ -140,7 +147,7 @@ class _MainScreenState extends State<MainScreen> {
             left: 22,
             child: GestureDetector(
               onTap: () {
-                scaffoldKey.currentState.openDrawer();
+                locatePosition();
               },
               child: Container(
                 decoration: BoxDecoration(
