@@ -16,7 +16,7 @@ class Request {
         return "Failed, No Response";
       }
     } catch (e) {
-      return "Failed.";
+      return "failed.";
     }
   }
 }

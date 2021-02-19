@@ -25,10 +25,19 @@ Future searchCoordinate(Position position, context) async {
           ", " +
           reverseSearchResult.address.values.elementAt(2);
 
-  print(reverseSearchResult.address.values.elementAt(0));
-
   Provider.of<AppData>(context, listen: false)
       .updatePickPickUpLocationAddress(userPickUpAddress);
 
   return reverseSearchResult.address["suburb"];
+}
+
+Future searchPlace(String place) async {
+  final searchResult = await Nominatim.searchByName(
+      query: place,
+      limit: 1,
+      addressDetails: true,
+      extraTags: true,
+      nameDetails: true,
+      country: 'gb');
+  print(searchResult.single.displayName);
 }

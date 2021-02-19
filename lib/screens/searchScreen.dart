@@ -1,4 +1,9 @@
+import 'package:ahadu_uber/configMaps.dart';
+import 'package:ahadu_uber/services/data/appData.dart';
+import 'package:ahadu_uber/services/data/method.dart';
+import 'package:ahadu_uber/services/data/request.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -6,8 +11,14 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  TextEditingController pickUpTextController = TextEditingController();
+  TextEditingController dropOffUpTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    String placeAddress =
+        Provider.of<AppData>(context).pickUpLocation.placeName ?? "";
+    pickUpTextController.text = placeAddress;
     return Scaffold(
       body: Column(
         children: [
@@ -23,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ]),
             child: Padding(
               padding:
-                  EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 20),
+                  EdgeInsets.only(left: 25, right: 25, top: 30, bottom: 20),
               child: Column(
                 children: [
                   SizedBox(height: 5),
@@ -52,10 +63,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   Row(
                     children: [
-                      Image.asset(
-                        "assets/image/pin.png",
-                        height: 16,
-                        width: 16,
+                      Icon(
+                        Icons.map,
+                        color: Colors.red,
                       ),
                       SizedBox(
                         width: 18,
@@ -69,6 +79,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Padding(
                             padding: EdgeInsets.all(3),
                             child: TextField(
+                              controller: pickUpTextController,
                               decoration: InputDecoration(
                                 hintText: "Pick Up Location",
                                 fillColor: Colors.grey[400],
@@ -89,10 +100,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   Row(
                     children: [
-                      Image.asset(
-                        "assets/image/destination.png",
-                        height: 16,
-                        width: 16,
+                      Icon(
+                        Icons.pin_drop,
+                        color: Colors.red,
                       ),
                       SizedBox(
                         width: 18,
@@ -106,6 +116,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Padding(
                             padding: EdgeInsets.all(3),
                             child: TextField(
+                              onChanged: (val) {
+                                search(val);
+                              },
+                              controller: dropOffUpTextController,
                               decoration: InputDecoration(
                                 hintText: "Drop Off Location",
                                 fillColor: Colors.grey[400],
@@ -129,4 +143,8 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+}
+
+void search(String place) async {
+  searchPlace(place);
 }
