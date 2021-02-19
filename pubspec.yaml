@@ -37,6 +37,7 @@ dependencies:
   geolocator: ^6.2.0
   osm_nominatim: ^1.0.1
   http: ^0.12.2
+  provider: ^4.3.3
 
 dev_dependencies:
   flutter_test:

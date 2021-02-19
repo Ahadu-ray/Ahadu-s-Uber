@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:ahadu_uber/screens/searchScreen.dart';
+import 'package:ahadu_uber/services/data/appData.dart';
 import 'package:ahadu_uber/services/data/method.dart';
 import 'package:ahadu_uber/widgets/divider.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   static const String idScreen = "mainscrren";
@@ -35,9 +38,9 @@ class _MainScreenState extends State<MainScreen> {
     newGoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    var address = await searchCoordinate(position);
+    var address = await searchCoordinate(position, context);
     setState(() {
-      this.place = address.displayName;
+      this.place = address;
     });
   }
 
@@ -213,31 +216,39 @@ class _MainScreenState extends State<MainScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black54,
-                              blurRadius: 6,
-                              spreadRadius: 0.5,
-                              offset: Offset(0.7, 0.7),
-                            ),
-                          ]),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.search,
-                              color: Colors.blue,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text("Search Drop Off"),
-                          ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black54,
+                                blurRadius: 6,
+                                spreadRadius: 0.5,
+                                offset: Offset(0.7, 0.7),
+                              ),
+                            ]),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                color: Colors.blue,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text("Search Drop Off"),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -256,7 +267,12 @@ class _MainScreenState extends State<MainScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Add Home"),
+                            Text(Provider.of<AppData>(context).pickUpLocation !=
+                                    null
+                                ? Provider.of<AppData>(context)
+                                    .pickUpLocation
+                                    .placeName
+                                : "AssHome"),
                             SizedBox(
                               height: 4,
                             ),
