@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:http/http.dart' as http;
 
-class Request {
+class CustomRequest {
   static Future<dynamic> getRequest(String url) async {
     http.Response response = await http.get(url);
 

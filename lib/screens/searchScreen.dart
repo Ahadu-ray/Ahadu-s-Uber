@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:ahadu_uber/configMaps.dart';
+import 'package:ahadu_uber/models/place.dart';
 import 'package:ahadu_uber/services/data/appData.dart';
 import 'package:ahadu_uber/services/data/method.dart';
 import 'package:ahadu_uber/services/data/request.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -13,7 +17,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController pickUpTextController = TextEditingController();
   TextEditingController dropOffUpTextController = TextEditingController();
-
+  List<Place> predictionPlacesList = [];
   @override
   Widget build(BuildContext context) {
     String placeAddress =
@@ -146,5 +150,60 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 void search(String place) async {
-  searchPlace(place);
+  String url =
+      "https://api.geocode.earth/v1/autocomplete?api_key=ge-057da8dfd588e075&boundary.gid=whosonfirst:region:85671149&text=$place";
+  String placeAddress = "";
+  var res = await CustomRequest.getRequest(url);
+  if (res == 'failed') {
+    return;
+  }
+
+  var prediction = res["features"];
+  var placeList = (prediction as List)
+      .map((e) => {
+            Place.fromJson(e),
+          })
+      .toList();
+
+  setState(() {
+    var predictionPlacesList = placeList;
+  });
+}
+
+void setState(Null Function() param0) {}
+
+class PlaceTile extends StatelessWidget {
+  final Place place;
+
+  PlaceTile({Key key, this.place}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          Icon(Icons.add_location),
+          SizedBox(
+            width: 14,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                place.name,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(
+                height: 3,
+              ),
+              Text(
+                place.street,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
 }
