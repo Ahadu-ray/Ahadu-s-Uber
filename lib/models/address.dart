@@ -1,11 +1,11 @@
 class Address {
-  String placeFormattedAddres;
+  String placeFormattedAddress;
   String placeName;
   String placeId;
   double latitude;
   double longitude;
   Address(
-      {this.placeFormattedAddres,
+      {this.placeFormattedAddress,
       this.placeName,
       this.placeId,
       this.latitude,

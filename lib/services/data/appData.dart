@@ -2,10 +2,15 @@ import 'package:ahadu_uber/models/address.dart';
 import 'package:flutter/cupertino.dart';
 
 class AppData extends ChangeNotifier {
-  Address pickUpLocation;
+  Address pickUpLocation, dropOffLocation;
 
-  void updatePickPickUpLocationAddress(Address pickUpAddress) {
+  void updatePickUpLocationAddress(Address pickUpAddress) {
     pickUpLocation = pickUpAddress;
+    notifyListeners();
+  }
+
+  void updateDropOffLocationAddress(Address dropOffAddress) {
+    dropOffLocation = dropOffAddress;
     notifyListeners();
   }
 }

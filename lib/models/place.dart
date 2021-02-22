@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 
-class Place {
+class PlaceInfo {
   String name;
   String label;
   String street;
@@ -8,9 +8,9 @@ class Place {
   double longitude;
   double latitude;
 
-  Place({this.label, this.name, this.street, this.id});
+  PlaceInfo({this.label, this.name, this.street, this.id});
 
-  Place.fromJson(Map<String, dynamic> json) {
+  PlaceInfo.fromJson(Map<String, dynamic> json) {
     id = json["properties"]["id"];
     name = json["properties"]["name"];
     label = json["properties"]["label"];

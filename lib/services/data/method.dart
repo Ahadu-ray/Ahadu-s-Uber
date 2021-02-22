@@ -26,7 +26,7 @@ Future searchCoordinate(Position position, context) async {
           reverseSearchResult.address.values.elementAt(2);
 
   Provider.of<AppData>(context, listen: false)
-      .updatePickPickUpLocationAddress(userPickUpAddress);
+      .updatePickUpLocationAddress(userPickUpAddress);
 
   return reverseSearchResult.address["suburb"];
 }

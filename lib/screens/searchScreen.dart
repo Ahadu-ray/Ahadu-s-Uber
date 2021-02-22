@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:js';
 
 import 'package:ahadu_uber/configMaps.dart';
+import 'package:ahadu_uber/models/address.dart';
 import 'package:ahadu_uber/models/place.dart';
 import 'package:ahadu_uber/services/data/appData.dart';
 import 'package:ahadu_uber/services/data/method.dart';
 import 'package:ahadu_uber/services/data/request.dart';
 import 'package:ahadu_uber/widgets/divider.dart';
+import 'package:ahadu_uber/widgets/progressDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +21,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController pickUpTextController = TextEditingController();
   TextEditingController dropOffUpTextController = TextEditingController();
-  List<Place> predictionPlacesList = [];
+  List<PlaceInfo> predictionPlacesList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +158,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: ListView.separated(
                     padding: EdgeInsets.all(0),
                     itemBuilder: (context, index) {
-                      print("reached builder");
                       return PlaceTile(place: predictionPlacesList[index]);
                     },
                     separatorBuilder: (BuildContext context, index) =>
@@ -165,9 +167,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     physics: ClampingScrollPhysics(),
                   ),
                 )
-              : Container(
-                  child: Text(predictionPlacesList.length.toString()),
-                )
+              : Container(),
         ],
       ),
     );
@@ -183,7 +183,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     print("180");
     var prediction = res["features"];
-    var placeList = (prediction as List).map((e) => Place.fromJson(e)).toList();
+    var placeList =
+        (prediction as List).map((e) => PlaceInfo.fromJson(e)).toList();
 
     print("184");
     this.setState(() {
@@ -195,65 +196,86 @@ class _SearchScreenState extends State<SearchScreen> {
 void setState(Null Function() param0) {}
 
 class PlaceTile extends StatelessWidget {
-  final Place place;
+  final PlaceInfo place;
 
   PlaceTile({Key key, this.place}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          SizedBox(
-            width: 10,
-          ),
-          Row(
-            children: [
-              Icon(Icons.add_location),
-              SizedBox(
-                width: 14,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 8,
-                    ),
-                    place.name != null
-                        ? Text(
-                            place.name,
-                            style: TextStyle(fontSize: 16),
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : Container(),
-                    SizedBox(
-                      height: 2,
-                    ),
-                    place.label != null
-                        ? Text(
-                            place.label,
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : place.street != null
-                            ? Text(
-                                place.street,
-                                style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            : Container(),
-                    SizedBox(
-                      height: 8,
-                    ),
-                  ],
+    return FlatButton(
+      onPressed: () {
+        choosePlace(place, context);
+      },
+      child: Container(
+        child: Column(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Row(
+              children: [
+                Icon(Icons.add_location),
+                SizedBox(
+                  width: 14,
                 ),
-              )
-            ],
-          ),
-        ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 8,
+                      ),
+                      place.name != null
+                          ? Text(
+                              place.name,
+                              style: TextStyle(fontSize: 16),
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : Container(),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      place.label != null
+                          ? Text(
+                              place.label,
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : place.street != null
+                              ? Text(
+                                  place.street,
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : Container(),
+                      SizedBox(
+                        height: 8,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void choosePlace(PlaceInfo place, BuildContext context) {
+    ProgressDialog(
+      message: "Setting DropOff",
+    );
+    Address dropOffAddress = Address();
+    dropOffAddress.latitude = place.latitude;
+    dropOffAddress.longitude = place.longitude;
+    dropOffAddress.placeName = place.name;
+
+    Provider.of<AppData>(context, listen: false)
+        .updateDropOffLocationAddress(dropOffAddress);
+
+    Navigator.pop(context);
   }
 }
