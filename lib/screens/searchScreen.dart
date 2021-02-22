@@ -5,6 +5,7 @@ import 'package:ahadu_uber/models/place.dart';
 import 'package:ahadu_uber/services/data/appData.dart';
 import 'package:ahadu_uber/services/data/method.dart';
 import 'package:ahadu_uber/services/data/request.dart';
+import 'package:ahadu_uber/widgets/divider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -18,12 +19,14 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController pickUpTextController = TextEditingController();
   TextEditingController dropOffUpTextController = TextEditingController();
   List<Place> predictionPlacesList = [];
+
   @override
   Widget build(BuildContext context) {
     String placeAddress =
         Provider.of<AppData>(context).pickUpLocation.placeName ?? "";
     pickUpTextController.text = placeAddress;
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       body: Column(
         children: [
           Container(
@@ -143,31 +146,50 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
+          (predictionPlacesList.length > 0)
+              ? Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(0),
+                    itemBuilder: (context, index) {
+                      print("reached builder");
+                      return PlaceTile(place: predictionPlacesList[index]);
+                    },
+                    separatorBuilder: (BuildContext context, index) =>
+                        DividerWidget(),
+                    itemCount: predictionPlacesList.length,
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                  ),
+                )
+              : Container(
+                  child: Text(predictionPlacesList.length.toString()),
+                )
         ],
       ),
     );
   }
-}
 
-void search(String place) async {
-  String url =
-      "https://api.geocode.earth/v1/autocomplete?api_key=ge-057da8dfd588e075&boundary.gid=whosonfirst:region:85671149&text=$place";
-  String placeAddress = "";
-  var res = await CustomRequest.getRequest(url);
-  if (res == 'failed') {
-    return;
+  void search(String place) async {
+    String url =
+        "https://api.geocode.earth/v1/autocomplete?api_key=ge-057da8dfd588e075&boundary.gid=whosonfirst:region:85671149&text=$place";
+
+    var res = await CustomRequest.getRequest(url);
+    if (res == 'failed') {
+      return;
+    }
+    print("180");
+    var prediction = res["features"];
+    var placeList = (prediction as List).map((e) => Place.fromJson(e)).toList();
+
+    print("184");
+    this.setState(() {
+      predictionPlacesList = placeList;
+    });
   }
-
-  var prediction = res["features"];
-  var placeList = (prediction as List)
-      .map((e) => {
-            Place.fromJson(e),
-          })
-      .toList();
-
-  setState(() {
-    var predictionPlacesList = placeList;
-  });
 }
 
 void setState(Null Function() param0) {}
@@ -180,28 +202,56 @@ class PlaceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.add_location),
           SizedBox(
-            width: 14,
+            width: 10,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                place.name,
-                style: TextStyle(fontSize: 16),
-              ),
+              Icon(Icons.add_location),
               SizedBox(
-                height: 3,
+                width: 14,
               ),
-              Text(
-                place.street,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 8,
+                    ),
+                    place.name != null
+                        ? Text(
+                            place.name,
+                            style: TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : Container(),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    place.label != null
+                        ? Text(
+                            place.label,
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : place.street != null
+                            ? Text(
+                                place.street,
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            : Container(),
+                    SizedBox(
+                      height: 8,
+                    ),
+                  ],
+                ),
+              )
             ],
-          )
+          ),
         ],
       ),
     );
